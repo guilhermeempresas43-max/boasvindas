@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Jaqueline sua Titia - Oficial</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      height: 100dvh;
+      overflow: hidden;
+      background: radial-gradient(circle at top, #182433 0%, #0c131a 100%);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: #ffffff;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 6px 12px 10px;
+    }
+
+    /* Container ocupando a altura exata da tela sem rolagem */
+    .app-screen {
+      width: 100%;
+      max-width: 420px;
+      height: 100%;
+      max-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    /* Boas-Vindas Acima do Vídeo */
+    .welcome-header {
+      width: 100%;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      padding: 2px 0 2px;
+      flex-shrink: 0;
+    }
+
+    .welcome-main {
+      font-size: 19px;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: -0.3px;
+      text-shadow: 0 2px 12px rgba(0, 0, 0, 0.7);
+    }
+
+    .welcome-sub {
+      font-size: 13.5px;
+      font-weight: 500;
+      color: #cbd5e1;
+      letter-spacing: -0.1px;
+      text-shadow: 0 1px 6px rgba(0, 0, 0, 0.7);
+    }
+
+    .welcome-sub b, .orange-highlight {
+      color: #ff7a00;
+      font-weight: 700;
+    }
+
+    /* Área do Vídeo */
+    .video-section {
+      position: relative;
+      width: 100%;
+      flex: 1;
+      min-height: 0;
+      border-radius: 20px;
+      overflow: hidden;
+      background: #000000;
+      box-shadow: 0 10px 32px rgba(0, 0, 0, 0.6);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      pointer-events: none;
+    }
+
+    /* Perfil Compacto no Canto Superior Esquerdo com a Nova Foto */
+    .profile-overlay {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      background: rgba(12, 19, 26, 0.72);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      padding: 4px 10px 4px 4px;
+      border-radius: 30px;
+      pointer-events: none;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.55);
+      max-width: 85%;
+    }
+
+    .avatar-wrapper {
+      position: relative;
+      width: 32px;
+      height: 32px;
+      min-width: 32px;
+      min-height: 32px;
+      flex-shrink: 0;
+    }
+
+    .avatar {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+      object-position: center 15%;
+      border: 1.5px solid #2AABEE;
+      display: block;
+    }
+
+    .online-indicator {
+      position: absolute;
+      bottom: -1px;
+      right: -1px;
+      width: 9px;
+      height: 9px;
+      background-color: #2ecc71;
+      border: 1.5px solid #0d141c;
+      border-radius: 50%;
+    }
+
+    .profile-info {
+      display: flex;
+      flex-direction: column;
+      gap: 0px;
+      min-width: 0;
+    }
+
+    .name-row {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .profile-name {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: #ffffff;
+      white-space: nowrap;
+      letter-spacing: -0.2px;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+    }
+
+    /* Selo de Verificado 100% Redondo e Perfeito */
+    .verified-badge {
+      width: 14px;
+      height: 14px;
+      min-width: 14px;
+      min-height: 14px;
+      flex-shrink: 0;
+      display: inline-block;
+      aspect-ratio: 1 / 1;
+    }
+
+    .status-text {
+      font-size: 10.5px;
+      color: #2ecc71;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 3.5px;
+      line-height: 1;
+    }
+
+    .status-dot {
+      width: 4.5px;
+      height: 4.5px;
+      background-color: #2ecc71;
+      border-radius: 50%;
+      display: inline-block;
+      animation: pulse-dot 1.8s infinite ease-in-out;
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.8); }
+    }
+
+    /* Indicador de Pause / Play */
+    .pause-indicator {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.7);
+      width: 60px;
+      height: 60px;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.22s ease;
+      z-index: 15;
+    }
+
+    .pause-indicator.show {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    .pause-indicator svg {
+      width: 26px;
+      height: 26px;
+      fill: #ffffff;
+    }
+
+    /* Selo de Som Mudo se o navegador restringir áudio no primeiro milissegundo */
+    .unmute-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 12;
+      background: rgba(13, 20, 28, 0.72);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      color: #ffffff;
+      padding: 5px 9px;
+      border-radius: 20px;
+      font-size: 10.5px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      pointer-events: none;
+    }
+
+    .unmute-badge.hidden {
+      display: none;
+    }
+
+    /* Barra Inferior com o Botão */
+    .bottom-section {
+      width: 100%;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      padding-bottom: 2px;
+    }
+
+    .telegram-btn {
+      position: relative;
+      width: 100%;
+      height: 50px;
+      border-radius: 15px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      outline: none;
+      cursor: not-allowed;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      background: #192534;
+      color: #7b8e9f;
+      font-size: 15.5px;
+      font-weight: 700;
+      letter-spacing: -0.2px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+    }
+
+    .btn-progress-bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: 0%;
+      background: linear-gradient(90deg, rgba(42, 171, 238, 0.35), rgba(42, 171, 238, 0.65));
+      transition: width 0.2s linear;
+      z-index: 1;
+    }
+
+    .btn-content {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-icon {
+      width: 20px;
+      height: 20px;
+      fill: currentColor;
+      flex-shrink: 0;
+    }
+
+    /* Botão Desbloqueado */
+    .telegram-btn.unlocked {
+      cursor: pointer;
+      background: linear-gradient(135deg, #2AABEE 0%, #229ED9 100%);
+      color: #ffffff;
+      border-color: rgba(255, 255, 255, 0.2);
+      box-shadow: 0 6px 24px rgba(42, 171, 238, 0.55);
+      animation: pulse-button 1.8s infinite ease-in-out;
+    }
+
+    .telegram-btn.unlocked:active {
+      transform: scale(0.98);
+      filter: brightness(0.95);
+    }
+
+    @keyframes pulse-button {
+      0%, 100% {
+        box-shadow: 0 4px 18px rgba(42, 171, 238, 0.5);
+        transform: translateY(0);
+      }
+      50% {
+        box-shadow: 0 8px 28px rgba(42, 171, 238, 0.75);
+        transform: translateY(-1.5px);
+      }
+    }
+
+    .status-caption {
+      text-align: center;
+      font-size: 11px;
+      color: #7b8e9f;
+      font-weight: 500;
+    }
+
+    .status-caption b {
+      color: #2AABEE;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+
+  <main class="app-screen">
+
+    <!-- Boas-Vindas Acima do Vídeo -->
+    <header class="welcome-header">
+      <h1 class="welcome-main">Bem-vindo, meu amor! 🧡</h1>
+      <p class="welcome-sub">Veja o recadinho da sua <b class="orange-highlight">Titia</b> antes de entrar...</p>
+    </header>
+
+    <!-- Seção do Vídeo com Perfil Sobreposto -->
+    <section class="video-section" id="videoContainer">
+
+      <!-- Perfil Compacto no Canto Superior Esquerdo -->
+      <div class="profile-overlay">
+        <div class="avatar-wrapper">
+          <img class="avatar" src="fotodeperfil/perfil_novo.jpg" alt="Foto de perfil">
+          <div class="online-indicator"></div>
+        </div>
+        <div class="profile-info">
+          <div class="name-row">
+            <span class="profile-name">Jaqueline sua Titia</span>
+            <!-- Selo Azul Verificado Perfeitamente Redondo -->
+            <svg class="verified-badge" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="12" cy="12" r="10" fill="#2AABEE"/>
+              <path d="M8 12.2L10.7 15L16.2 9.5" stroke="#ffffff" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="status-text">
+            <span class="status-dot"></span>
+            online
+          </div>
+        </div>
+      </div>
+
+      <!-- Aviso sutil de áudio se o navegador silenciou no início -->
+      <div id="unmuteBadge" class="unmute-badge hidden">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+          <line x1="23" y1="9" x2="17" y2="15"></line>
+          <line x1="17" y1="9" x2="23" y2="15"></line>
+        </svg>
+        Toque p/ som
+      </div>
+
+      <!-- Vídeo Sem Controles Nativos -->
+      <video 
+        id="mainVideo" 
+        playsinline 
+        webkit-playsinline 
+        autoplay 
+        preload="auto"
+      >
+        <source src="videoboasvindas/IMG_2088.MOV" type="video/quicktime">
+        <source src="videoboasvindas/IMG_2088.MOV" type="video/mp4">
+      </video>
+
+      <!-- Indicador visual de pause/play no centro -->
+      <div id="pauseIndicator" class="pause-indicator">
+        <svg id="pauseIcon" viewBox="0 0 24 24">
+          <path d="M8 5v14l11-7z"/>
+        </svg>
+      </div>
+
+    </section>
+
+    <!-- Barra Inferior com o Botão Carregando -->
+    <footer class="bottom-section">
+      <a 
+        id="telegramBtn" 
+        class="telegram-btn" 
+        href="#" 
+        target="_blank" 
+        rel="noopener noreferrer"
+      >
+        <div id="btnProgressBar" class="btn-progress-bar"></div>
+        <div class="btn-content">
+          <svg class="btn-icon" viewBox="0 0 24 24">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.75-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .37z"/>
+          </svg>
+          <span id="btnText">Liberando acesso... (0%)</span>
+        </div>
+      </a>
+      <div id="statusCaption" class="status-caption">
+        O botão será liberado automaticamente ao término do vídeo
+      </div>
+    </footer>
+
+  </main>
+
+  <script>
+    const TARGET_URL = "https://telegram.me/eujaquelinebot?start=6f39483b";
+
+    const videoContainer = document.getElementById("videoContainer");
+    const video = document.getElementById("mainVideo");
+    const pauseIndicator = document.getElementById("pauseIndicator");
+    const pauseIcon = document.getElementById("pauseIcon");
+    const unmuteBadge = document.getElementById("unmuteBadge");
+    const telegramBtn = document.getElementById("telegramBtn");
+    const btnText = document.getElementById("btnText");
+    const btnProgressBar = document.getElementById("btnProgressBar");
+    const statusCaption = document.getElementById("statusCaption");
+
+    let isUnlocked = false;
+    let indicatorTimeout = null;
+
+    // Feedback visual ao pausar/despausar
+    function flashIndicator(isPaused) {
+      if (isPaused) {
+        pauseIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
+      } else {
+        pauseIcon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+      }
+      pauseIndicator.classList.add("show");
+      clearTimeout(indicatorTimeout);
+      indicatorTimeout = setTimeout(() => {
+        pauseIndicator.classList.remove("show");
+      }, 500);
+    }
+
+    // Início imediato do vídeo (Autoplay)
+    function startVideo() {
+      video.muted = false;
+      const playPromise = video.play();
+
+      if (playPromise !== undefined) {
+        playPromise.then(() => {
+          unmuteBadge.classList.add("hidden");
+        }).catch(() => {
+          // Fallback caso a política do navegador silencie no autoplay
+          video.muted = true;
+          video.play().then(() => {
+            unmuteBadge.classList.remove("hidden");
+          }).catch(err => {
+            console.warn("Autoplay bloqueado:", err);
+          });
+        });
+      }
+    }
+
+    window.addEventListener("DOMContentLoaded", startVideo);
+
+    // Toque no vídeo para Pausar ou Retomar
+    videoContainer.addEventListener("click", () => {
+      if (video.muted) {
+        video.muted = false;
+        unmuteBadge.classList.add("hidden");
+      }
+
+      if (video.paused) {
+        video.play();
+        flashIndicator(false);
+      } else {
+        video.pause();
+        flashIndicator(true);
+      }
+    });
+
+    // Barra de progresso do botão acompanhando o vídeo
+    video.addEventListener("timeupdate", () => {
+      if (!video.duration || isUnlocked) return;
+
+      const current = video.currentTime;
+      const duration = video.duration;
+      const progress = Math.min(100, Math.max(0, (current / duration) * 100));
+
+      btnProgressBar.style.width = `${progress}%`;
+      btnText.textContent = `Liberando acesso... (${Math.floor(progress)}%)`;
+
+      if (progress >= 99.5 || (duration - current) <= 0.4) {
+        unlockButton();
+      }
+    });
+
+    // Fim do vídeo
+    video.addEventListener("ended", unlockButton);
+
+    function unlockButton() {
+      if (isUnlocked) return;
+      isUnlocked = true;
+
+      btnProgressBar.style.width = "100%";
+      telegramBtn.classList.add("unlocked");
+      telegramBtn.href = TARGET_URL;
+      telegramBtn.setAttribute("target", "_blank");
+
+      btnText.textContent = "Meu grupinho oficial";
+      statusCaption.innerHTML = "✅ <b>Acesso liberado!</b> Toque no botão para entrar.";
+    }
+
+    // Impede clique antes de liberar
+    telegramBtn.addEventListener("click", (e) => {
+      if (!isUnlocked) {
+        e.preventDefault();
+      }
+    });
+  </script>
+</body>
+</html>
