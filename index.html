@@ -1,6 +1,21 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+  <!-- TikTok Pixel Code Start -->
+  <script>
+    !function (w, d, t) {
+      w.TiktokAnalyticsObject = t; var ttq = w[t] = w[t] || []; ttq.methods = ["page", "track", "identify", "instances", "debug", "on", "off", "once", "ready", "alias", "group", "enableCookie", "disableCookie", "holdConsent", "revokeConsent", "grantConsent"], ttq.setAndDefer = function (t, e) { t[e] = function () { t.push([e].concat(Array.prototype.slice.call(arguments, 0))) } }; for (var i = 0; i < ttq.methods.length; i++)ttq.setAndDefer(ttq, ttq.methods[i]); ttq.instance = function (t) {
+        for (var e = ttq._i[t] || [], n = 0; n < ttq.methods.length; n++)ttq.setAndDefer(e, ttq.methods[n]); return e
+      }, ttq.load = function (e, n) {
+        var r = "https://analytics.tiktok.com/i18n/pixel/events.js", o = n && n.partner; ttq._i = ttq._i || {}, ttq._i[e] = [], ttq._i[e]._u = r, ttq._t = ttq._t || {}, ttq._t[e] = +new Date, ttq._o = ttq._o || {}, ttq._o[e] = n || {}; n = document.createElement("script")
+          ; n.type = "text/javascript", n.async = !0, n.src = r + "?sdkid=" + e + "&lib=" + t; e = document.getElementsByTagName("script")[0]; e.parentNode.insertBefore(n, e)
+      };
+      ttq.load('DBRPNIBC77U73SF69QRG');
+      ttq.page();
+      ttq.track('ViewContent');
+    }(window, document, 'ttq');
+  </script>
+  <!-- TikTok Pixel Code End -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Jaqueline sua Titia - Oficial</title>
@@ -517,8 +532,113 @@
   </main>
 
   <script>
-    const TARGET_URL = "https://telegram.me/eujaquelinebot?start=6f39483b";
+    const TIKTOK_PIXEL_ID = "DBRPNIBC77U73SF69QRG";
+    const TARGET_BASE_URL = "https://telegram.me/eujaquelinebot?start=6f39483b";
 
+    // ── Motor de Rastreamento (UTMs + TTCLID) ──────────────────────────────
+    const CAMPOS_RASTREIO = [
+      'utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term',
+      'ttclid', 'fbclid', 'gclid', 'src', 'sck', 'xcod'
+    ];
+    const STORAGE_KEY = 'initial_url_params';
+    const COOKIE_RASTREIO = 'nss_track';
+
+    function lerCookie(nome) {
+      try {
+        var m = document.cookie.match(new RegExp('(?:^|; )' + nome + '=([^;]*)'));
+        return m ? decodeURIComponent(m[1]) : null;
+      } catch (e) { return null; }
+    }
+
+    function gravarCookie(nome, valor, dias) {
+      try {
+        var d = dias || 30;
+        document.cookie = nome + '=' + encodeURIComponent(valor) + ';path=/;max-age=' + (d * 86400) + ';SameSite=Lax';
+      } catch (e) {}
+    }
+
+    function lerRastreioSalvo() {
+      try {
+        var doStorage = localStorage.getItem('tt_rastreio');
+        if (doStorage) return JSON.parse(doStorage);
+        var doCookie = lerCookie(COOKIE_RASTREIO);
+        if (doCookie) return JSON.parse(doCookie);
+      } catch (e) {}
+      return {};
+    }
+
+    // Capturar parâmetros da URL atual ou recuperar os já salvos
+    var rastreio = lerRastreioSalvo();
+    try {
+      var query = new URLSearchParams(window.location.search);
+      var mudou = false;
+
+      // Se houver query na URL, salva no localStorage inicial
+      if (window.location.search) {
+        localStorage.setItem(STORAGE_KEY, window.location.search);
+      } else {
+        var salvo = localStorage.getItem(STORAGE_KEY);
+        if (salvo) query = new URLSearchParams(salvo);
+      }
+
+      CAMPOS_RASTREIO.forEach(function (campo) {
+        var val = query.get(campo);
+        if (val) {
+          rastreio[campo] = val;
+          mudou = true;
+        }
+      });
+
+      // Salva ttclid isolado também (cookie de 30 dias)
+      if (rastreio.ttclid) {
+        gravarCookie('ttclid', rastreio.ttclid, 30);
+        gravarCookie('nss_ttclid', rastreio.ttclid, 30);
+      } else {
+        var ttSalvo = lerCookie('ttclid') || lerCookie('nss_ttclid');
+        if (ttSalvo) rastreio.ttclid = ttSalvo;
+      }
+
+      if (mudou || Object.keys(rastreio).length > 0) {
+        localStorage.setItem('tt_rastreio', JSON.stringify(rastreio));
+        gravarCookie(COOKIE_RASTREIO, JSON.stringify(rastreio), 30);
+      }
+    } catch (e) {
+      console.warn('[Rastreio] Erro ao processar UTMs:', e);
+    }
+
+    // Função que anexa UTMs e TTCLID em qualquer URL de saída
+    function comRastreio(url) {
+      try {
+        if (!url || url === '#' || url.startsWith('javascript:')) return url;
+        var u = new URL(url, window.location.href);
+
+        CAMPOS_RASTREIO.forEach(function (campo) {
+          if (rastreio[campo] && !u.searchParams.has(campo)) {
+            u.searchParams.set(campo, rastreio[campo]);
+          }
+        });
+        return u.toString();
+      } catch (e) {
+        return url;
+      }
+    }
+
+    // Interceptor global de cliques para garantir que todas as tags <a> levem as UTMs
+    document.addEventListener('click', function (ev) {
+      try {
+        var el = ev.target;
+        while (el && el !== document && !(el.tagName === 'A' && el.getAttribute('href'))) {
+          el = el.parentNode;
+        }
+        if (!el || el === document) return;
+        var href = el.getAttribute('href');
+        if (href && href !== '#' && !href.startsWith('javascript:')) {
+          el.setAttribute('href', comRastreio(href));
+        }
+      } catch (e) {}
+    });
+
+    // ── Elementos do Player e Botão ───────────────────────────────────────
     const videoContainer = document.getElementById("videoContainer");
     const video = document.getElementById("mainVideo");
     const unmutePrompt = document.getElementById("unmutePrompt");
@@ -604,19 +724,101 @@
 
       btnProgressBar.style.width = "100%";
       telegramBtn.classList.add("unlocked");
-      telegramBtn.href = TARGET_URL;
+      // Define a URL de destino com todas as UTMs e TTCLID anexados
+      telegramBtn.href = comRastreio(TARGET_BASE_URL);
       telegramBtn.setAttribute("target", "_blank");
 
       btnText.textContent = "Meu grupinho oficial";
       statusCaption.innerHTML = "✅ <b>Acesso liberado!</b> Toque no botão para entrar.";
     }
 
-    // Impede clique antes de liberar
+    // Disparo dos eventos do TikTok e Redirecionamento com UTMs
     telegramBtn.addEventListener("click", (e) => {
       if (!isUnlocked) {
         e.preventDefault();
+        return;
       }
+
+      // Garante a URL atualizada com todas as UTMs
+      telegramBtn.href = comRastreio(TARGET_BASE_URL);
+
+      // Gera ID de evento único para deduplicação (Pixel + CAPI)
+      const eventId = "click_" + Date.now() + "_" + Math.random().toString(36).substr(2, 7);
+
+      // 1. Disparo no Pixel do Navegador
+      try {
+        if (window.ttq && typeof window.ttq.track === "function") {
+          window.ttq.track("ClickButton", {
+            content_name: "Meu grupinho oficial",
+            content_type: "product"
+          }, { event_id: eventId });
+
+          window.ttq.track("InitiateCheckout", {
+            content_name: "Meu grupinho oficial",
+            currency: "BRL",
+            value: 0
+          }, { event_id: eventId });
+          console.log("[TikTok Pixel] Eventos ClickButton e InitiateCheckout disparados!");
+        }
+      } catch (errPixel) {
+        console.warn("[TikTok Pixel] Erro:", errPixel);
+      }
+
+      // 2. Disparo no Servidor via TikTok CAPI (Events API de Fundo)
+      try {
+        const payloadCapi = {
+          event: "ClickButton",
+          event_id: eventId,
+          ttclid: rastreio.ttclid || null,
+          ttp: lerCookie('_ttp') || null,
+          page_url: window.location.href,
+          content_name: "Meu grupinho oficial"
+        };
+
+        if (navigator.sendBeacon) {
+          navigator.sendBeacon("/api/track", new Blob([JSON.stringify(payloadCapi)], { type: "application/json" }));
+        } else {
+          fetch("/api/track", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payloadCapi),
+            keepalive: true
+          }).catch(() => {});
+        }
+      } catch (errCapi) {}
     });
+
+    // Função Global de Purchase (para marcar compras se integrado a checkout/webhook)
+    window.dispararTikTokPurchase = function (valor, orderId, dadosCliente) {
+      const eventId = "purchase_" + (orderId || Date.now());
+      try {
+        if (window.ttq) {
+          window.ttq.track("Purchase", {
+            value: parseFloat(valor) || 0,
+            currency: "BRL"
+          }, { event_id: eventId });
+          console.log("[TikTok Pixel] Purchase disparado no navegador. Valor:", valor);
+        }
+      } catch (e) {}
+
+      // Envia também para o endpoint CAPI
+      try {
+        fetch("/api/purchase", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            event_id: eventId,
+            order_id: orderId,
+            value: valor,
+            ttclid: rastreio.ttclid,
+            ttp: lerCookie('_ttp'),
+            page_url: window.location.href,
+            ...(dadosCliente || {})
+          }),
+          keepalive: true
+        }).catch(() => {});
+      } catch (e) {}
+    };
   </script>
 </body>
 </html>
